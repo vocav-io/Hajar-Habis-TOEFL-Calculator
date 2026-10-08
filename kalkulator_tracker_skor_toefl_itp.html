@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hajar Habis TOEFL by @vocav.io - Kalkulator & Tracker Skor ITP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased">
+
+    <!-- Header Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <!-- Logo VOCAV -->
+                <div class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 overflow-hidden shadow-md shadow-blue-500/20 bg-[#1D60F6] border border-blue-400">
+                    <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="50" fill="#1D60F6"/>
+                        <circle cx="51" cy="27" r="5.5" fill="#0A0E1A"/>
+                        <circle cx="49" cy="73" r="5.5" fill="#0A0E1A"/>
+                        <path d="M 32 68 C 28 68 25 64 27 59 L 42 33 C 44 29 50 29 52 33 L 53 36 C 55 40 54 44 50 46 L 40 64 C 38 68 35 68 32 68 Z" fill="#0A0E1A"/>
+                        <path d="M 48 54 C 52 52 56 53 58 57 L 68 73 C 71 78 67 83 61 83 C 58 83 55 80 53 77 L 46 62 C 44 57 46 54 48 54 Z" fill="#0A0E1A"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-slate-900 text-base sm:text-lg leading-tight tracking-tight">HAJAR HABIS TOEFL</h1>
+                    <p class="text-xs text-blue-600 font-extrabold tracking-wide">BY @VOCAV.IO</p>
+                </div>
+            </div>
+
+            <!-- Quick Action Badges -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <button onclick="openTargetModal()" class="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-brand-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+                    <i class="fa-solid fa-bullseye text-brand-600"></i>
+                    <span class="hidden sm:inline">Target Skor:</span>
+                    <span id="headerTargetDisplay" class="bg-white px-2 py-0.5 rounded border border-indigo-200 font-bold">550</span>
+                </button>
+                <button onclick="exportCSV()" class="p-2 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-lg text-sm transition" title="Ekspor Data (CSV)">
+                    <i class="fa-solid fa-download"></i>
+                </button>
+                <button onclick="openTableMatrixModal()" class="p-2 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-lg text-sm transition" title="Lihat Tabel Konversi TOEFL">
+                    <i class="fa-solid fa-table-list"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Top Stats Overview Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Stat 1: Skor Tertinggi -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Skor Tertinggi</p>
+                    <h3 id="statHighest" class="text-2xl font-bold text-slate-900">-</h3>
+                </div>
+            </div>
+
+            <!-- Stat 2: Skor Rata-Rata -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Rata-Rata Tes</p>
+                    <h3 id="statAverage" class="text-2xl font-bold text-slate-900">-</h3>
+                </div>
+            </div>
+
+            <!-- Stat 3: Total Tes Dicatat -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500">Total Simulasi/Tes</p>
+                    <h3 id="statTotalTests" class="text-2xl font-bold text-slate-900">0</h3>
+                </div>
+            </div>
+
+            <!-- Stat 4: Kemajuan Target -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-center">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-medium text-slate-500">Pencapaian Target</span>
+                    <span id="statTargetPercent" class="text-xs font-bold text-brand-600">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="statTargetBar" class="bg-brand-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p id="statTargetDiff" class="text-[11px] text-slate-400 mt-1">Butuh +0 poin lagi</p>
+            </div>
+        </div>
+
+        <!-- Calculator Card Section -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-brand-600"></i>
+                    Kalkulator Skor TOEFL ITP
+                </h2>
+                <span class="text-xs bg-slate-100 text-slate-600 font-medium px-2.5 py-1 rounded-full">Skala Resmi 310 - 677</span>
+            </div>
+
+            <form id="calcForm" onsubmit="event.preventDefault(); saveScoreEntry();" class="space-y-4">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- Input Section 1: Listening -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label for="rawListening" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-headphones text-indigo-500"></i> Section 1: Listening
+                            </label>
+                            <div class="text-xs">
+                                <span class="font-medium text-slate-500">Konversi: </span>
+                                <span id="convListening" class="font-bold text-brand-600 bg-white px-2 py-0.5 rounded border border-slate-200">53</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="rawListening" min="0" max="50" value="30" oninput="calculateScores()" class="w-full accent-brand-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <input type="number" id="numListening" min="0" max="50" value="30" oninput="syncFromNumber('Listening')" class="w-16 text-center text-sm font-bold bg-white border border-slate-300 rounded-lg py-1 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                            <span>0 Benar</span>
+                            <span>50 Soal</span>
+                        </div>
+                    </div>
+
+                    <!-- Input Section 2: Structure & Written Expression -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label for="rawStructure" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-pen-nib text-purple-500"></i> Section 2: Structure
+                            </label>
+                            <div class="text-xs">
+                                <span class="font-medium text-slate-500">Konversi: </span>
+                                <span id="convStructure" class="font-bold text-brand-600 bg-white px-2 py-0.5 rounded border border-slate-200">49</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="rawStructure" min="0" max="40" value="25" oninput="calculateScores()" class="w-full accent-brand-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <input type="number" id="numStructure" min="0" max="40" value="25" oninput="syncFromNumber('Structure')" class="w-16 text-center text-sm font-bold bg-white border border-slate-300 rounded-lg py-1 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                            <span>0 Benar</span>
+                            <span>40 Soal</span>
+                        </div>
+                    </div>
+
+                    <!-- Input Section 3: Reading Comprehension -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label for="rawReading" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-book-open text-emerald-500"></i> Section 3: Reading
+                            </label>
+                            <div class="text-xs">
+                                <span class="font-medium text-slate-500">Konversi: </span>
+                                <span id="convReading" class="font-bold text-brand-600 bg-white px-2 py-0.5 rounded border border-slate-200">49</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="rawReading" min="0" max="50" value="32" oninput="calculateScores()" class="w-full accent-brand-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <input type="number" id="numReading" min="0" max="50" value="32" oninput="syncFromNumber('Reading')" class="w-16 text-center text-sm font-bold bg-white border border-slate-300 rounded-lg py-1 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                            <span>0 Benar</span>
+                            <span>50 Soal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Score Banner & Form Inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center pt-2">
+                    <div class="md:col-span-5 bg-gradient-to-r from-brand-600 to-indigo-700 rounded-2xl p-4 text-white text-center shadow-lg shadow-brand-500/15">
+                        <p class="text-xs uppercase tracking-wider font-semibold opacity-80">Estimasi Total Skor TOEFL</p>
+                        <div id="totalScoreDisplay" class="text-4xl font-extrabold my-1">503</div>
+                        <div class="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium">
+                            <span>CEFR:</span>
+                            <span id="cefrLevelDisplay" class="font-bold text-amber-300">B1 (Intermediate)</span>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-600 block mb-1">Tanggal Tes/Simulasi</label>
+                            <input type="date" id="testDate" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-600 block mb-1">Nama Test (TEST CODE)</label>
+                            <input type="text" id="testNote" placeholder="misal : HHTFL-01-0189" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <button type="submit" class="w-full bg-slate-900 hover:bg-brand-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-md hover:shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 text-sm">
+                                <i class="fa-solid fa-plus-circle"></i>
+                                Simpan ke Tracker Progres
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- "Ini Strategi Untuk Kamu!" Section -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 sm:p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg shrink-0">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-extrabold text-slate-900 text-base sm:text-lg tracking-tight">Ini Strategi Untuk Kamu!</h2>
+                        <p class="text-xs text-slate-500">Analisis otomatis & rekomendasi taktik berdasarkan 10 tingkatan status capaian skor kamu saat ini</p>
+                    </div>
+                </div>
+                <span class="text-[11px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold hidden sm:inline-block">10 Level Status</span>
+            </div>
+
+            <!-- 3 Section Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Listening Tip Card -->
+                <div class="bg-indigo-50/40 border border-indigo-100 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                    <div>
+                        <div class="flex items-center justify-between mb-2 gap-1 flex-wrap">
+                            <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
+                                <i class="fa-solid fa-headphones text-indigo-600"></i> Section 1: Listening
+                            </div>
+                            <span id="badgeListening" class="text-[10px] px-2.5 py-1 rounded-full font-bold shrink-0">
+                                🟡 5 — Cukup baik
+                            </span>
+                        </div>
+                        <p id="tipListening" class="text-xs text-slate-600 leading-relaxed mt-1">
+                            Mulai bangun strategi untuk Part B dan Part C. Manfaatkan jeda pembacaan petunjuk untuk membaca sekilas opsi jawaban sebelum audio diputar.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Structure Tip Card -->
+                <div class="bg-purple-50/40 border border-purple-100 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                    <div>
+                        <div class="flex items-center justify-between mb-2 gap-1 flex-wrap">
+                            <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
+                                <i class="fa-solid fa-pen-nib text-purple-600"></i> Section 2: Structure
+                            </div>
+                            <span id="badgeStructure" class="text-[10px] px-2.5 py-1 rounded-full font-bold shrink-0">
+                                🟡 6 — Baik
+                            </span>
+                        </div>
+                        <p id="tipStructure" class="text-xs text-slate-600 leading-relaxed mt-1">
+                            Perdalam materi Parallel Structure serta perbedaan bentuk kata.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Reading Tip Card -->
+                <div class="bg-emerald-50/40 border border-emerald-100 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                    <div>
+                        <div class="flex items-center justify-between mb-2 gap-1 flex-wrap">
+                            <div class="flex items-center gap-2 font-bold text-slate-900 text-sm">
+                                <i class="fa-solid fa-book-open text-emerald-600"></i> Section 3: Reading
+                            </div>
+                            <span id="badgeReading" class="text-[10px] px-2.5 py-1 rounded-full font-bold shrink-0">
+                                🟡 6 — Baik
+                            </span>
+                        </div>
+                        <p id="tipReading" class="text-xs text-slate-600 leading-relaxed mt-1">
+                            Perdalam pemahaman pada soal Factual / Detail Questions dan Unstated/Except Questions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Analytics Chart Section -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 sm:p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div>
+                        <h2 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-chart-area text-brand-600"></i>
+                            Grafik Perkembangan Nilai
+                        </h2>
+                        <p class="text-xs text-slate-500">Perkembangan total skor TOEFL ITP Anda dari waktu ke waktu</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <select id="chartViewOption" onchange="updateChart()" class="text-xs font-semibold bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none">
+                            <option value="total">Total Skor & Target</option>
+                            <option value="breakdown">Breakdown Per Seksi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Canvas Container -->
+                <div class="relative w-full h-[320px] sm:h-[360px]">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart Insight Footer -->
+            <div id="chartInsightBox" class="mt-4 p-3 bg-indigo-50/60 rounded-xl border border-indigo-100 flex items-start gap-3 text-xs text-slate-700">
+                <i class="fa-solid fa-lightbulb text-brand-600 text-base shrink-0 mt-0.5"></i>
+                <div id="insightText">
+                    Grafik menampilkan tren perkembangan nilai Anda. Tambahkan hasil tes secara berkala untuk memantau konsistensi peningkatan skor.
+                </div>
+            </div>
+        </div>
+
+        <!-- History Table Section -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-brand-600"></i>
+                        Riwayat Perkembangan Nilai
+                    </h2>
+                    <p class="text-xs text-slate-500">Daftar lengkap tes dan kode latihan TOEFL ITP yang pernah dicatat</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        <input type="text" id="tableSearch" onkeyup="filterTable()" placeholder="Cari Kode Test / Nama..." class="text-xs bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500 w-44 sm:w-56">
+                    </div>
+                    <button onclick="clearAllData()" class="text-xs text-rose-600 hover:text-rose-700 font-semibold px-2.5 py-1.5 hover:bg-rose-50 rounded-lg transition" title="Hapus Semua Data">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase font-bold tracking-wider">
+                            <th class="py-3.5 px-4">Tanggal</th>
+                            <th class="py-3.5 px-4">Nama Test (TEST CODE)</th>
+                            <th class="py-3.5 px-4 text-center">Listening</th>
+                            <th class="py-3.5 px-4 text-center">Structure</th>
+                            <th class="py-3.5 px-4 text-center">Reading</th>
+                            <th class="py-3.5 px-4 text-center">Total Skor</th>
+                            <th class="py-3.5 px-4 text-center">CEFR</th>
+                            <th class="py-3.5 px-4 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                        <!-- Dynamic Rows Injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State Display -->
+            <div id="emptyState" class="hidden p-8 text-center">
+                <div class="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-folder-open text-xl"></i>
+                </div>
+                <h4 class="font-bold text-slate-700 text-sm">Belum Ada Data Riwayat</h4>
+                <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">Gunakan kalkulator di atas untuk menghitung skor dan klik "Simpan ke Tracker Progres".</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-8">
+        <p>© 2026 <strong>Hajar Habis TOEFL by @vocav.io</strong>. Dibuat untuk persiapan tes TOEFL ITP & Beasiswa (LPDP, AAS, Fulbright, dll).</p>
+    </footer>
+
+    <!-- Modal 1: Target Score Settings Modal -->
+    <div id="targetModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl border border-slate-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-brand-600"></i>
+                    Atur Target Skor TOEFL
+                </h3>
+                <button onclick="closeTargetModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-700 block mb-1">Target Total Skor (310 - 677)</label>
+                    <input type="number" id="targetInput" min="310" max="677" value="550" class="w-full text-base font-bold bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-center focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="text-[11px] text-slate-500 space-y-1">
+                    <p class="font-semibold text-slate-700">Acuan Umum Target Skor:</p>
+                    <ul class="list-disc pl-4 space-y-0.5">
+                        <li><strong>500+</strong>: Syarat Kelulusan S1 / Sidang Skripsi</li>
+                        <li><strong>530 - 550</strong>: Syarat Beasiswa LPDP Dalam Negeri / S2</li>
+                        <li><strong>580 - 600+</strong>: Syarat Beasiswa Luar Negeri / S3</li>
+                    </ul>
+                </div>
+                <button onclick="saveTargetScore()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2 rounded-xl text-xs transition">
+                    Simpan Target
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: TOEFL Conversion Reference Table Modal -->
+    <div id="matrixModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-5 shadow-xl border border-slate-100 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-table text-brand-600"></i>
+                        Tabel Standar Konversi TOEFL ITP
+                    </h3>
+                    <p class="text-xs text-slate-500">Pemetaan Skor Mentah (Jawaban Benar) ke Skor Konversi ETS</p>
+                </div>
+                <button onclick="closeTableMatrixModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="overflow-y-auto custom-scrollbar flex-1 py-4">
+                <table class="w-full text-center text-xs border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 sticky top-0 font-bold text-slate-700">
+                            <th class="py-2 px-2 border border-slate-200">Jumlah Benar</th>
+                            <th class="py-2 px-2 border border-slate-200 text-indigo-700 bg-indigo-50">Listening (0-50)</th>
+                            <th class="py-2 px-2 border border-slate-200 text-purple-700 bg-purple-50">Structure (0-40)</th>
+                            <th class="py-2 px-2 border border-slate-200 text-emerald-700 bg-emerald-50">Reading (0-50)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrixTableBody" class="divide-y divide-slate-200">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <span id="toastMessage">Pesan Notifikasi</span>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Official ETS TOEFL ITP Conversion Tables
+        const listeningTable = [
+            24, 25, 26, 27, 28, 29, 30, 31, 32, 32,
+            33, 35, 37, 38, 39, 41, 42, 43, 44, 45,
+            45, 46, 47, 48, 48, 49, 50, 51, 52, 52,
+            53, 54, 54, 55, 56, 57, 57, 58, 59, 60,
+            61, 62, 63, 64, 65, 66, 66, 67, 68, 68, 68
+        ];
+
+        const structureTable = [
+            20, 20, 21, 22, 23, 25, 26, 27, 29, 31,
+            33, 35, 36, 37, 38, 40, 40, 41, 42, 43,
+            44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+            54, 55, 56, 57, 58, 60, 61, 63, 65, 67, 68
+        ];
+
+        const readingTable = [
+            20, 21, 22, 23, 23, 24, 25, 26, 28, 28,
+            29, 30, 31, 32, 34, 35, 36, 37, 38, 39,
+            40, 41, 42, 43, 43, 44, 45, 46, 46, 47,
+            48, 48, 49, 50, 51, 52, 52, 53, 54, 54,
+            55, 56, 57, 58, 59, 60, 61, 63, 65, 66, 67
+        ];
+
+        // App State
+        let scoreHistory = JSON.parse(localStorage.getItem('toefl_score_history')) || [
+            { id: 1, date: '2026-01-10', note: 'HHTFL-01-0180', rawL: 24, rawS: 20, rawR: 26, convL: 48, convS: 44, convR: 45, total: 457, cefr: 'A2' },
+            { id: 2, date: '2026-02-01', note: 'HHTFL-01-0185', rawL: 28, rawS: 23, rawR: 30, convL: 52, convS: 47, convR: 48, total: 490, cefr: 'B1' },
+            { id: 3, date: '2026-03-15', note: 'HHTFL-01-0189', rawL: 32, rawS: 28, rawR: 35, convL: 54, convS: 52, convR: 52, total: 527, cefr: 'B1' }
+        ];
+
+        let targetScore = parseInt(localStorage.getItem('toefl_target_score')) || 550;
+        let chartInstance = null;
+
+        // Initialize App on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set default date to today
+            document.getElementById('testDate').valueAsDate = new Date();
+            document.getElementById('targetInput').value = targetScore;
+            document.getElementById('headerTargetDisplay').innerText = targetScore;
+
+            calculateScores();
+            renderHistoryTable();
+            updateStats();
+            initChart();
+            renderMatrixTable();
+        });
+
+        // Calculate converted scores & updates live display
+        function calculateScores() {
+            const rawL = parseInt(document.getElementById('rawListening').value) || 0;
+            const rawS = parseInt(document.getElementById('rawStructure').value) || 0;
+            const rawR = parseInt(document.getElementById('rawReading').value) || 0;
+
+            // Sync number inputs
+            document.getElementById('numListening').value = rawL;
+            document.getElementById('numStructure').value = rawS;
+            document.getElementById('numReading').value = rawR;
+
+            // Converted scores
+            const convL = listeningTable[Math.min(rawL, 50)];
+            const convS = structureTable[Math.min(rawS, 40)];
+            const convR = readingTable[Math.min(rawR, 50)];
+
+            document.getElementById('convListening').innerText = convL;
+            document.getElementById('convStructure').innerText = convS;
+            document.getElementById('convReading').innerText = convR;
+
+            // Total converted score equation
+            const total = Math.round(((convL + convS + convR) * 10) / 3);
+            document.getElementById('totalScoreDisplay').innerText = total;
+
+            // Determine CEFR Level
+            let cefrText = 'A2 (Basic)';
+            if (total >= 627) cefrText = 'C1 (Advanced)';
+            else if (total >= 543) cefrText = 'B2 (Upper-Intermediate)';
+            else if (total >= 460) cefrText = 'B1 (Intermediate)';
+
+            document.getElementById('cefrLevelDisplay').innerText = cefrText;
+
+            // Update 10-Tier Dynamic Technical Tips
+            updateDynamicTips(rawL, rawS, rawR);
+        }
+
+        function syncFromNumber(section) {
+            const numVal = parseInt(document.getElementById('num' + section).value) || 0;
+            const rangeInput = document.getElementById('raw' + section);
+            rangeInput.value = Math.min(Math.max(0, numVal), parseInt(rangeInput.max));
+            calculateScores();
+        }
+
+        // 10-Tier Status and Technical Recommendation Generator
+        function getTierInfo(section, rawScore) {
+            let tier = 1;
+            if (section === 'structure') {
+                if (rawScore >= 40) tier = 10;
+                else if (rawScore >= 36) tier = 9;
+                else if (rawScore >= 32) tier = 8;
+                else if (rawScore >= 28) tier = 7;
+                else if (rawScore >= 24) tier = 6;
+                else if (rawScore >= 20) tier = 5;
+                else if (rawScore >= 16) tier = 4;
+                else if (rawScore >= 12) tier = 3;
+                else if (rawScore >= 7) tier = 2;
+                else tier = 1;
+            } else { // listening & reading (max 50)
+                if (rawScore >= 50) tier = 10;
+                else if (rawScore >= 45) tier = 9;
+                else if (rawScore >= 41) tier = 8;
+                else if (rawScore >= 36) tier = 7;
+                else if (rawScore >= 31) tier = 6;
+                else if (rawScore >= 26) tier = 5;
+                else if (rawScore >= 21) tier = 4;
+                else if (rawScore >= 16) tier = 3;
+                else if (rawScore >= 10) tier = 2;
+                else tier = 1;
+            }
+
+            const meta = {
+                1: { name: "🔴 1 — Sangat membutuhkan peningkatan", badgeClass: "bg-rose-600 text-white font-bold" },
+                2: { name: "🔴 2 — Banyak membutuhkan peningkatan", badgeClass: "bg-rose-500 text-white font-bold" },
+                3: { name: "🔴 3 — Membutuhkan peningkatan", badgeClass: "bg-rose-100 text-rose-800 border border-rose-300 font-bold" },
+                4: { name: "🟡 4 — Mulai berkembang", badgeClass: "bg-amber-100 text-amber-900 border border-amber-300 font-bold" },
+                5: { name: "🟡 5 — Cukup baik", badgeClass: "bg-amber-200 text-amber-900 font-bold" },
+                6: { name: "🟡 6 — Baik", badgeClass: "bg-amber-500 text-white font-bold" },
+                7: { name: "🟢 7 — Sangat baik", badgeClass: "bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold" },
+                8: { name: "🟢 8 — Sangat unggul", badgeClass: "bg-emerald-500 text-white font-bold" },
+                9: { name: "🟢 9 — Luar biasa, pertahankan!", badgeClass: "bg-emerald-600 text-white font-bold" },
+                10: { name: "👑 10 — Sempurna! (Rata Kanan)", badgeClass: "bg-gradient-to-r from-amber-400 via-emerald-500 to-teal-500 text-white font-extrabold shadow-sm ring-2 ring-amber-300/50" }
+            };
+
+            const tierMeta = meta[tier];
+            let tipHtml = "";
+
+            if (section === 'listening') {
+                const tipsL = {
+                    1: "Kosa kata dan kepekaan mendengarkan kamu masih di tahap awal. Mulai biasakan dengar percakapan bahasa Inggris pendek setiap hari dan kuasai kata tanya dasar (Who, What, Where) di Part A.",
+                    2: "Fokus dulu kuasai Part A (Short Conversations). Pelajari pola pertanyaan tersirat seperti <em>'What does the man/woman mean?'</em> dan latih pendengaran pada kata-kata yang bunyi mirip (<em>similar sounds trap</em>).",
+                    3: "Perkuat pemahaman kamu pada ungkapan idiom dasar dan bentuk ekspresi negatif tersirat. Ingat, hindari memilih opsi yang bunyinya persis sama dengan kata di audio!",
+                    4: "Pelajari teknik <em>Restatement / Paraphrasing</em>. Jawaban benar di Part A hampir selalu menggunakan kata atau struktur berbeda (<em>synonyms</em>) yang bermakna sama dengan audio.",
+                    5: "Mulai bangun strategi untuk Part B dan Part C. Manfaatkan jeda pembacaan petunjuk (<em>directions</em>) untuk membaca sekilas (<em>preview</em>) opsi jawaban sebelum audio diputar.",
+                    6: "Tingkatkan konsentrasi pada percakapan dan ceramah panjang. Latih kemampuan mencatat kata kunci (<em>keywords</em>) penting seperti tokoh, angka, alasan, dan kesimpulan di Part C.",
+                    7: "Performa listening kamu sudah mantap! Asah ketajaman mendengarkan aksen cepat (<em>connected speech, linking verbs</em>) dan pertanyaan kesimpulan tersirat (<em>inference questions</em>).",
+                    8: "Penguasaan listening kamu luar biasa! Jaga fokus dan stamina mental dari soal #1 hingga #50 agar tidak hilang konsentrasi di bagian akhir Part C.",
+                    9: "Hampir sempurna! Terus lakukan latihan simulasi penuh (<em>full test</em>) dengan kondisi ujian nyata agar telinga dan daya tahan konsentrasi kamu tetap terasah maksimal.",
+                    10: "👑 <strong>SKOR RATA KANAN!</strong> Kamu berhasil menjawab seluruh 50 soal Listening dengan sempurna! Pertahankan ketajaman pendengaran dan ritme pengerjaan kamu saat tes resmi nanti!"
+                };
+                tipHtml = tipsL[tier];
+            } else if (section === 'structure') {
+                const tipsS = {
+                    1: "Fondasi tata bahasa kamu perlu diperkuat dari dasar. Fokus identifikasi mana <strong>Subject</strong> utama dan <strong>Verb</strong> utama dalam setiap kalimat sederhana.",
+                    2: "Pelajari pemakaian kata kerja (<em>Verbs</em>), kata benda (<em>Nouns</em>), dan kata sifat (<em>Adjectives</em>). Waspadai soal yang tidak punya kata kerja atau malah memiliki subjek ganda (<em>double subjects</em>).",
+                    3: "Kuasai konsep <em>Appositives</em> (penjelas subjek) dan <em>Prepositional Phrases</em>. Seringkali penjelas tambahan ini membuat kamu bingung menemukan subjek dan predikat asli.",
+                    4: "Pelajari <em>Subject-Verb Agreement</em> (kesesuaian subjek & kata kerja) serta penggunaan kata penghubung (<em>Connectors</em>) pada kalimat majemuk (<em>Coordinate & Subordinate Connectors</em>).",
+                    5: "Pelajari <em>Noun Clauses</em> dan <em>Adjective Clauses</em>. Untuk bagian Written Expression (#16-40), eliminasikan kesalahan secara bertahap: Verb, Noun, Parallelism, dan Word Form.",
+                    6: "Perdalam materi <em>Parallel Structure</em> (kesejajaran tata bahasa dengan <em>and, but, or</em>) serta perbedaan bentuk kata (<em>Word Form</em>, misalnya Adjective vs Adverb).",
+                    7: "Kuasai materi lanjutan seperti <em>Reduced Clauses</em> (pengurangan klausa sifat/waktu) dan <em>Inversion</em> (kalimat terbalik setelah kata keterangan tempat atau kata berunsur negatif).",
+                    8: "Pemahaman grammar kamu sangat tajam! Latih ketelitian pada detail kecil seperti <em>Uncountable Nouns</em>, <em>Subject-Verb Inversion</em>, dan penggunaan <em>Conditionals</em>.",
+                    9: "Pemahaman tata bahasa kamu sudah di level tinggi! Terus latih pengerjaan soal Written Expression dengan alokasi waktu ketat agar eliminasi jawaban salah semakin cepat.",
+                    10: "👑 <strong>SKOR RATA KANAN!</strong> Kamu berhasil menjawab 40/40 soal Structure secara sempurna! Penguasaan grammar kamu benar-benar luar biasa!"
+                };
+                tipHtml = tipsS[tier];
+            } else if (section === 'reading') {
+                const tipsR = {
+                    1: "Kecepatan baca dan kosa kata kamu perlu dibangun. Mulai rutin membaca teks ilmiah pendek 1-2 paragraf setiap hari dan catat kosa kata TOEFL baru.",
+                    2: "Gunakan teknik <em>Skimming</em> (membaca cepat untuk tahu ide umum) dan hindari membaca kata demi kata secara lambat. Fokus memperbanyak kosa kata (<em>Vocabulary</em>).",
+                    3: "Dahulukan menjawab soal <em>Vocabulary in Context</em> dan <em>Pronoun Reference</em> (rujukan kata ganti) yang bisa kamu jawab langsung tanpa membaca seluruh paragraf.",
+                    4: "Latih cara cepat menemukan <em>Main Idea</em> (Gagasan Utama) yang umumnya berada di kalimat pertama (<em>topic sentence</em>) atau kalimat terakhir dari tiap paragraf.",
+                    5: "Kuasai teknik <em>Scanning</em> untuk menemukan informasi spesifik (tanggal, nama tokoh, istilah khusus) secara efisien tanpa harus membaca ulang seluruh bacaan.",
+                    6: "Perdalam pemahaman pada soal <em>Factual / Detail Questions</em> dan <em>Unstated/Except Questions</em>. Hati-hati, hindari memilih opsi hanya karena kata-katanya mirip dengan teks!",
+                    7: "Kemampuan membaca kamu sudah sangat baik! Latih soal berjenis <em>Inference</em> (kesimpulan tersirat) serta pemahaman <em>Author's Tone or Purpose</em> (sikap/tujuan penulis).",
+                    8: "Manajemen waktu kamu di seksi Reading sudah sangat baik! Pastikan kamu menyelesaikan tiap wacana teks dalam waktu maksimal 10-11 menit agar punya sisa waktu untuk evaluasi.",
+                    9: "Ketajaman analisis teks kamu luar biasa! Pertahankan daya tahan membaca (<em>reading stamina</em>) terutama pada teks topik sains atau sejarah Amerika yang rumit.",
+                    10: "👑 <strong>SKOR RATA KANAN!</strong> Kamu menyapu bersih seluruh 50 soal Reading dengan sempurna! Kecepatan dan analisis bacaan kamu berada di level tertinggi!"
+                };
+                tipHtml = tipsR[tier];
+            }
+
+            return {
+                tier,
+                badgeName: tierMeta.name,
+                badgeClass: tierMeta.badgeClass,
+                tipHtml
+            };
+        }
+
+        function updateDynamicTips(rawL, rawS, rawR) {
+            const infoL = getTierInfo('listening', rawL);
+            const infoS = getTierInfo('structure', rawS);
+            const infoR = getTierInfo('reading', rawR);
+
+            // Listening Badge & Tip
+            const bL = document.getElementById('badgeListening');
+            bL.className = `text-[10px] px-2.5 py-1 rounded-full shrink-0 ${infoL.badgeClass}`;
+            bL.innerText = infoL.badgeName;
+            document.getElementById('tipListening').innerHTML = infoL.tipHtml;
+
+            // Structure Badge & Tip
+            const bS = document.getElementById('badgeStructure');
+            bS.className = `text-[10px] px-2.5 py-1 rounded-full shrink-0 ${infoS.badgeClass}`;
+            bS.innerText = infoS.badgeName;
+            document.getElementById('tipStructure').innerHTML = infoS.tipHtml;
+
+            // Reading Badge & Tip
+            const bR = document.getElementById('badgeReading');
+            bR.className = `text-[10px] px-2.5 py-1 rounded-full shrink-0 ${infoR.badgeClass}`;
+            bR.innerText = infoR.badgeName;
+            document.getElementById('tipReading').innerHTML = infoR.tipHtml;
+        }
+
+        // Save test entry to history
+        function saveScoreEntry() {
+            const dateVal = document.getElementById('testDate').value;
+            const noteVal = document.getElementById('testNote').value.trim() || 'Simulasi Mandiri';
+
+            if (!dateVal) {
+                showToast('Harap pilih tanggal tes terlebih dahulu.', 'warning');
+                return;
+            }
+
+            const rawL = parseInt(document.getElementById('rawListening').value) || 0;
+            const rawS = parseInt(document.getElementById('rawStructure').value) || 0;
+            const rawR = parseInt(document.getElementById('rawReading').value) || 0;
+
+            const convL = listeningTable[Math.min(rawL, 50)];
+            const convS = structureTable[Math.min(rawS, 40)];
+            const convR = readingTable[Math.min(rawR, 50)];
+            const total = Math.round(((convL + convS + convR) * 10) / 3);
+
+            let cefr = 'A2';
+            if (total >= 627) cefr = 'C1';
+            else if (total >= 543) cefr = 'B2';
+            else if (total >= 460) cefr = 'B1';
+
+            const newEntry = {
+                id: Date.now(),
+                date: dateVal,
+                note: noteVal,
+                rawL, rawS, rawR,
+                convL, convS, convR,
+                total, cefr
+            };
+
+            scoreHistory.push(newEntry);
+            // Sort history by date ascending
+            scoreHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            localStorage.setItem('toefl_score_history', JSON.stringify(scoreHistory));
+
+            // Reset note input
+            document.getElementById('testNote').value = '';
+
+            renderHistoryTable();
+            updateStats();
+            updateChart();
+
+            showToast('Hasil tes berhasil disimpan ke tracker!', 'success');
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('historyTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            tbody.innerHTML = '';
+
+            if (scoreHistory.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            // Render rows in reverse chronological order
+            const sortedDesc = [...scoreHistory].reverse();
+
+            sortedDesc.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition-colors';
+
+                const cefrBadgeClass = getCefrBadgeClass(item.cefr);
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-semibold text-slate-900">${formatDate(item.date)}</td>
+                    <td class="py-3.5 px-4">
+                        <span class="font-bold text-slate-800">${escapeHtml(item.note)}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="font-semibold text-slate-800">${item.convL}</span>
+                        <span class="text-[10px] text-slate-400 block">(${item.rawL}/50)</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="font-semibold text-slate-800">${item.convS}</span>
+                        <span class="text-[10px] text-slate-400 block">(${item.rawS}/40)</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="font-semibold text-slate-800">${item.convR}</span>
+                        <span class="text-[10px] text-slate-400 block">(${item.rawR}/50)</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="text-sm font-extrabold text-brand-600">${item.total}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${cefrBadgeClass}">${item.cefr}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-right">
+                        <button onclick="deleteEntry(${item.id})" class="text-slate-400 hover:text-rose-600 transition p-1" title="Hapus catatan ini">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteEntry(id) {
+            scoreHistory = scoreHistory.filter(item => item.id !== id);
+            localStorage.setItem('toefl_score_history', JSON.stringify(scoreHistory));
+            renderHistoryTable();
+            updateStats();
+            updateChart();
+            showToast('Catatan tes telah dihapus.', 'info');
+        }
+
+        function clearAllData() {
+            if (confirm('Apakah Anda yakin ingin menghapus SELURUH riwayat tes? Data yang dihapus tidak dapat dikembalikan.')) {
+                scoreHistory = [];
+                localStorage.setItem('toefl_score_history', JSON.stringify(scoreHistory));
+                renderHistoryTable();
+                updateStats();
+                updateChart();
+                showToast('Seluruh data riwayat berhasil dibersihkan.', 'warning');
+            }
+        }
+
+        function filterTable() {
+            const query = document.getElementById('tableSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#historyTableBody tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function updateStats() {
+            if (scoreHistory.length === 0) {
+                document.getElementById('statHighest').innerText = '-';
+                document.getElementById('statAverage').innerText = '-';
+                document.getElementById('statTotalTests').innerText = '0';
+                document.getElementById('statTargetPercent').innerText = '0%';
+                document.getElementById('statTargetBar').style.width = '0%';
+                document.getElementById('statTargetDiff').innerText = `Target: ${targetScore}`;
+                return;
+            }
+
+            const totals = scoreHistory.map(item => item.total);
+            const highest = Math.max(...totals);
+            const avg = Math.round(totals.reduce((a, b) => a + b, 0) / totals.length);
+
+            document.getElementById('statHighest').innerText = highest;
+            document.getElementById('statAverage').innerText = avg;
+            document.getElementById('statTotalTests').innerText = scoreHistory.length;
+
+            // Target progress based on highest score achieved
+            const percent = Math.min(100, Math.round((highest / targetScore) * 100));
+            document.getElementById('statTargetPercent').innerText = `${percent}%`;
+            document.getElementById('statTargetBar').style.width = `${percent}%`;
+
+            const diff = targetScore - highest;
+            if (diff <= 0) {
+                document.getElementById('statTargetDiff').innerText = '🎉 Target Skor Tercapai!';
+            } else {
+                document.getElementById('statTargetDiff').innerText = `Butuh +${diff} poin lagi menuju target`;
+            }
+        }
+
+        // Chart Engine
+        function initChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: getChartData('total'),
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, weight: '600' } }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 12,
+                            titleFont: { size: 12, weight: 'bold' },
+                            bodyFont: { size: 12 },
+                            cornerRadius: 10
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 310,
+                            max: 677,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            updateChartInsight();
+        }
+
+        function updateChart() {
+            if (!chartInstance) return;
+            const viewOption = document.getElementById('chartViewOption').value;
+            chartInstance.data = getChartData(viewOption);
+
+            // Adjust y-axis range based on view
+            if (viewOption === 'breakdown') {
+                chartInstance.options.scales.y.min = 31;
+                chartInstance.options.scales.y.max = 68;
+            } else {
+                chartInstance.options.scales.y.min = 310;
+                chartInstance.options.scales.y.max = 677;
+            }
+
+            chartInstance.update();
+            updateChartInsight();
+        }
+
+        function getChartData(view) {
+            const labels = scoreHistory.map(item => `${formatDateShort(item.date)} (${item.note})`);
+
+            if (view === 'total') {
+                return {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Total Skor TOEFL',
+                            data: scoreHistory.map(item => item.total),
+                            borderColor: '#4f46e5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.08)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#4f46e5',
+                            pointRadius: 5
+                        },
+                        {
+                            label: 'Target Skor (' + targetScore + ')',
+                            data: Array(scoreHistory.length).fill(targetScore),
+                            borderColor: '#ef4444',
+                            borderDash: [6, 6],
+                            fill: false,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        }
+                    ]
+                };
+            } else { // breakdown view
+                return {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Listening',
+                            data: scoreHistory.map(item => item.convL),
+                            borderColor: '#6366f1',
+                            tension: 0.2,
+                            borderWidth: 2,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Structure',
+                            data: scoreHistory.map(item => item.convS),
+                            borderColor: '#a855f7',
+                            tension: 0.2,
+                            borderWidth: 2,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Reading',
+                            data: scoreHistory.map(item => item.convR),
+                            borderColor: '#10b981',
+                            tension: 0.2,
+                            borderWidth: 2,
+                            pointRadius: 4
+                        }
+                    ]
+                };
+            }
+        }
+
+        function updateChartInsight() {
+            const insightText = document.getElementById('insightText');
+
+            if (scoreHistory.length < 2) {
+                insightText.innerText = 'Tambahkan minimal 2 hasil latihan untuk melihat tren grafik perkembangan dan analisis konsistensi skor kamu.';
+                return;
+            }
+
+            const firstScore = scoreHistory[0].total;
+            const lastScore = scoreHistory[scoreHistory.length - 1].total;
+            const diff = lastScore - firstScore;
+
+            if (diff > 0) {
+                insightText.innerHTML = `🔥 <strong>Progres Positif!</strong> Skor total kamu meningkat sebanyak <strong>+${diff} poin</strong> dari latihan pertama (${firstScore}) ke latihan terakhir (${lastScore}). Terus jaga ritme belajar!`;
+            } else if (diff < 0) {
+                insightText.innerHTML = `⚠️ <strong>Perhatian:</strong> Skor total kamu mengalami penurunan sebesar <strong>${diff} poin</strong> dari latihan awal. Cek seksi yang mengalami penurunan dan pelajari tips strategi di atas!`;
+            } else {
+                insightText.innerHTML = `📊 <strong>Skor Stabil:</strong> Nilai kamu masih stabil di angka <strong>${lastScore}</strong>. Tingkatkan intensitas latihan soal pada seksi terlemah kamu untuk menembus target!`;
+            }
+        }
+
+        // Target Modal Logic
+        function openTargetModal() {
+            document.getElementById('targetModal').classList.remove('hidden');
+        }
+
+        function closeTargetModal() {
+            document.getElementById('targetModal').classList.add('hidden');
+        }
+
+        function saveTargetScore() {
+            const val = parseInt(document.getElementById('targetInput').value);
+            if (val >= 310 && val <= 677) {
+                targetScore = val;
+                localStorage.setItem('toefl_target_score', targetScore);
+                document.getElementById('headerTargetDisplay').innerText = targetScore;
+                closeTargetModal();
+                updateStats();
+                updateChart();
+                showToast('Target skor berhasil diperbarui!', 'success');
+            } else {
+                showToast('Target skor harus berada di antara 310 dan 677.', 'warning');
+            }
+        }
+
+        // Matrix Reference Table Modal Logic
+        function openTableMatrixModal() {
+            document.getElementById('matrixModal').classList.remove('hidden');
+        }
+
+        function closeTableMatrixModal() {
+            document.getElementById('matrixModal').classList.add('hidden');
+        }
+
+        function renderMatrixTable() {
+            const tbody = document.getElementById('matrixTableBody');
+            tbody.innerHTML = '';
+
+            for (let i = 50; i >= 0; i--) {
+                const tr = document.createElement('tr');
+                tr.className = i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50';
+
+                const L = listeningTable[i] || '-';
+                const S = i <= 40 ? structureTable[i] : '-';
+                const R = readingTable[i] || '-';
+
+                tr.innerHTML = `
+                    <td class="py-1.5 px-2 font-bold border border-slate-200">${i}</td>
+                    <td class="py-1.5 px-2 border border-slate-200 text-indigo-700 font-semibold">${L}</td>
+                    <td class="py-1.5 px-2 border border-slate-200 text-purple-700 font-semibold">${S}</td>
+                    <td class="py-1.5 px-2 border border-slate-200 text-emerald-700 font-semibold">${R}</td>
+                `;
+
+                tbody.appendChild(tr);
+            }
+        }
+
+        function exportCSV() {
+            if (scoreHistory.length === 0) {
+                showToast('Tidak ada data riwayat untuk diekspor.', 'warning');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Tanggal,Nama Test (TEST CODE),Benar Listening,Benar Structure,Benar Reading,Konversi Listening,Konversi Structure,Konversi Reading,Total Skor,CEFR\n";
+
+            scoreHistory.forEach(item => {
+                csvContent += `"${item.date}","${item.note}",${item.rawL},${item.rawS},${item.rawR},${item.convL},${item.convS},${item.convR},${item.total},"${item.cefr}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `HajarHabisTOEFL_Tracker_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('File CSV berhasil diunduh!', 'success');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = message;
+
+            if (type === 'success') {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-sm';
+            } else if (type === 'warning') {
+                toastIcon.className = 'fa-solid fa-triangle-exclamation text-amber-400 text-sm';
+            } else {
+                toastIcon.className = 'fa-solid fa-circle-info text-blue-400 text-sm';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function formatDate(dateStr) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateStr).toLocaleDateString('id-ID', options);
+        }
+
+        function formatDateShort(dateStr) {
+            const d = new Date(dateStr);
+            return `${d.getDate()}/${d.getMonth()+1}`;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        function getCefrBadgeClass(cefr) {
+            switch(cefr) {
+                case 'C1': return 'bg-emerald-100 text-emerald-800';
+                case 'B2': return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+                case 'B1': return 'bg-amber-100 text-amber-800';
+                default: return 'bg-slate-100 text-slate-700';
+            }
+        }
+    </script>
+</body>
+</html>
